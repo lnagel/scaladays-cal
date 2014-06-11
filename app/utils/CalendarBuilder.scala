@@ -6,8 +6,7 @@ import models.Session
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
-import net.fortuna.ical4j.model.property.Name
-import net.fortuna.ical4j.model.property.Location
+import net.fortuna.ical4j.model.property._
 
 import org.joda.time.{DateTime => JodaDateTime}
 import net.fortuna.ical4j.model.{DateTime => IcalDateTime}
@@ -45,6 +44,10 @@ object CalendarBuilder {
         val default = "Kosmos Berlin, Karl-Marx-Allee 131a, Berlin"
         val location = session.location.map(room => s"Room $room, $default").getOrElse(default) 
         meeting.getProperties().add(new Location(location))
+        
+        session.details.foreach { details =>
+          meeting.getProperties().add(new Description(details))
+        }
         
         Some(meeting)
       }
