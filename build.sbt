@@ -12,3 +12,5 @@ libraryDependencies ++= Seq(
   cache,
   ws
 )
+
+libraryDependencies += "org.mnode.ical4j" % "ical4j" % "1.0.5.2"
