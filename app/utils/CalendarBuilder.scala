@@ -30,7 +30,8 @@ object CalendarBuilder {
     calendar.getProperties().add(new ProdId("-//Ben Fortuna//iCal4j 1.0//EN"))
     calendar.getProperties().add(CalScale.GREGORIAN)
     
-    calendar.getProperties().add(new Name("Scala Days 2014"))
+    calendar.getProperties().add(new XProperty("X-WR-CALNAME", "Scala Days 2014"))
+    calendar.getProperties().add(new XProperty("X-WR-TIMEZONE", "Europe/Berlin"))
     
     calendar
   }
