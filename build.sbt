@@ -14,3 +14,5 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies += "org.mnode.ical4j" % "ical4j" % "1.0.5.2"
+
+libraryDependencies += "org.jsoup" % "jsoup" % "1.7.2"

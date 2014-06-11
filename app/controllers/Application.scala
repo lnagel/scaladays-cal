@@ -10,6 +10,7 @@ import utils.DataSource
 import models.Data
 import org.joda.time._
 import models.Session
+import utils.CalendarBuilder
 
 object Application extends Controller {
   
@@ -42,6 +43,19 @@ object Application extends Controller {
           Ok(Json.prettyPrint(JsArray(jsObjects)))
         }
         case None => Ok(Json.prettyPrint(JsObject(Seq("error" -> JsString("true")))))
+      }
+    }
+  }
+  
+  def sessionsIcal = Action.async {
+    DataSource.data.map { sessionsOption =>
+      sessionsOption match {
+        case Some(sessions) => {
+          val calendar = CalendarBuilder.createCalendar(sessions)
+
+          Ok(calendar.toString)
+        }
+        case None => Ok("")
       }
     }
   }

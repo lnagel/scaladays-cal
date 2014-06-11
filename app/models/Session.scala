@@ -3,6 +3,10 @@ package models
 import org.joda.time.DateTime
 
 object Session {
+  def withCorrectedTimes(day: Day, session: Session) = {
+    Session(session.title, correctTimes(day, session), session.location, session.details)
+  }
+  
   def correctTimes(day: Day, session: Session) = {
     session.time match {
       case Some((start, end)) => {
@@ -20,4 +24,4 @@ object Session {
   }
 }
 
-case class Session(title: String, time: Option[Tuple2[DateTime,DateTime]]) //, location: String, details: String)
+case class Session(title: String, time: Option[Tuple2[DateTime,DateTime]], location: Option[Int], details: Option[String])

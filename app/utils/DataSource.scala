@@ -8,10 +8,17 @@ import models._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import scala.concurrent.Future
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 
 object DataSource {
   
   implicit val context = play.api.libs.concurrent.Execution.Implicits.defaultContext
+  
+  val cleanedStringReads = __.read[String].map { v =>
+    val doc: Document = Jsoup.parseBodyFragment(v)
+    doc.body.text
+  }
   
   val timePeriodReads = __.read[String].map { v =>
     val fmt = DateTimeFormat.forPattern("HH:mm")
@@ -24,8 +31,10 @@ object DataSource {
   }
   
   implicit val sessionReads = (
-      (JsPath \ "title").read[String] and 
-      (JsPath \ "time").read(timePeriodReads)
+      (JsPath \ "title").read(cleanedStringReads) and 
+      (JsPath \ "time").read(timePeriodReads) and 
+      (JsPath \ "room").readNullable[Int] and 
+      (JsPath \ "description").readNullable(cleanedStringReads)
     )(Session.apply _)
   
   val dayDateReads = __.read[String].map { v =>
@@ -60,13 +69,14 @@ object DataSource {
         case s: JsSuccess[Data] => {
           val sessions = s.get.days.flatMap { d =>
             d.sessions.map { s =>
-              Session(s.title, Session.correctTimes(d, s))
+              Session.withCorrectedTimes(d, s)
             }
           }
           
           Some(sessions)
         }
         case e: JsError => {
+          println(e.toString)
           None
         }
       }
