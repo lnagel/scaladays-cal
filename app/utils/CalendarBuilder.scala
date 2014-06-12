@@ -7,20 +7,16 @@ import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.property._
-
 import org.joda.time.{DateTime => JodaDateTime}
+import org.joda.time.{DateTimeZone => JodaDateTimeZone}
 import net.fortuna.ical4j.model.{DateTime => IcalDateTime}
 
 object CalendarBuilder {
   
   implicit def JodaDateTime2IcalDateTime(time: JodaDateTime): IcalDateTime = {
-    new IcalDateTime(time.getMillis())
-  }
-  
-  implicit val timezone = {
-    val registry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    val timezone = registry.getTimeZone("Europe/Berlin")
-    timezone.getVTimeZone()
+    val converted = new IcalDateTime(time.getMillis())
+    converted.setUtc(true)
+    converted
   }
   
   def initCalendar = {
@@ -31,16 +27,14 @@ object CalendarBuilder {
     calendar.getProperties().add(CalScale.GREGORIAN)
     
     calendar.getProperties().add(new XProperty("X-WR-CALNAME", "Scala Days 2014"))
-    calendar.getProperties().add(new XProperty("X-WR-TIMEZONE", "Europe/Berlin"))
     
     calendar
   }
   
-  def initEvent(session: Session)(implicit tz: VTimeZone): Option[VEvent] = {
+  def initEvent(session: Session): Option[VEvent] = {
     session.times match {
       case Some((start, end)) => {
         val meeting = new VEvent(start, end, session.title)
-        meeting.getProperties().add(tz.getTimeZoneId)
         
         val default = "Kosmos Berlin, Karl-Marx-Allee 131a, Berlin"
         val location = session.location.map(room => s"Room $room, $default").getOrElse(default) 

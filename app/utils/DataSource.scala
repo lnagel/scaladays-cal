@@ -5,7 +5,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.ws._
 import play.api.Play.current
 import models._
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, DateTimeZone}
 import org.joda.time.format.DateTimeFormat
 import scala.concurrent.Future
 import org.jsoup.Jsoup
@@ -21,7 +21,8 @@ object DataSource {
   }
   
   val timePeriodReads = __.read[String].map { v =>
-    val fmt = DateTimeFormat.forPattern("HH:mm")
+    val tz = DateTimeZone.forID("Europe/Berlin")
+    val fmt = DateTimeFormat.forPattern("HH:mm").withZone(tz)
     v.split("-") match {
       case Array(start, end) => {
         Some((fmt.parseDateTime(start), fmt.parseDateTime(end)))
