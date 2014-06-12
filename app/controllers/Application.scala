@@ -11,6 +11,7 @@ import models.Data
 import org.joda.time._
 import models.Session
 import utils.CalendarBuilder
+import play.api.cache._
 
 object Application extends Controller {
   
@@ -47,15 +48,18 @@ object Application extends Controller {
     }
   }
   
-  def sessionsIcal = Action.async {
-    DataSource.data.map { sessionsOption =>
-      sessionsOption match {
-        case Some(sessions) => {
-          val calendar = CalendarBuilder.createCalendar(sessions)
-
-          Ok(calendar.toString)
+  def sessionsIcal = Cached((_ => "sessions.ical"): (RequestHeader => String), 120) {
+    Action.async {
+      DataSource.data.map { sessionsOption =>
+        sessionsOption match {
+          case Some(sessions) => {
+            val calendar = CalendarBuilder.createCalendar(sessions)
+            Ok(calendar.toString)
+          }
+          case None => {
+            InternalServerError("No valid data received")
+          }
         }
-        case None => Ok("")
       }
     }
   }
