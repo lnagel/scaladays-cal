@@ -37,7 +37,7 @@ object CalendarBuilder {
   }
   
   def initEvent(session: Session)(implicit tz: VTimeZone): Option[VEvent] = {
-    session.time match {
+    session.times match {
       case Some((start, end)) => {
         val meeting = new VEvent(start, end, session.title)
         meeting.getProperties().add(tz.getTimeZoneId)

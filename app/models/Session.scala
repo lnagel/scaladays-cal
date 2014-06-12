@@ -8,7 +8,7 @@ object Session {
   }
   
   def correctTimes(day: Day, session: Session) = {
-    session.time match {
+    session.times match {
       case Some((start, end)) => {
         Some((combine(day.date, start), combine(day.date, end)))
       }
@@ -24,4 +24,4 @@ object Session {
   }
 }
 
-case class Session(title: String, time: Option[Tuple2[DateTime,DateTime]], location: Option[Int], details: Option[String])
+case class Session(title: String, times: Option[Tuple2[DateTime,DateTime]], location: Option[Int], details: Option[String])
