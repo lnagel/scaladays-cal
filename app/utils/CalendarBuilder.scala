@@ -46,9 +46,21 @@ object CalendarBuilder {
         val location = session.location.map(room => s"Room $room, $default").getOrElse(default) 
         meeting.getProperties().add(new Location(location))
         
-        session.details.foreach { details =>
-          meeting.getProperties().add(new Description(details))
+        val speakerDetails = session.speakers match {
+          case Some(speakers) => speakers.map { speaker => 
+            List(Some(speaker.name), speaker.company, speaker.twitter).flatten.filter(_.trim.nonEmpty).mkString(", ")
+          }
+          case None => Seq()
         }
+        
+        val details = (session.details, speakerDetails) match {
+          case (Some(sessionDetails), Nil) => sessionDetails
+          case (None, speakers) => speakers.mkString("\n")
+          case (Some(sessionDetails), speakers) => speakers.mkString("\n") + "\n\n" + sessionDetails
+          case _ => ""
+        }
+        
+        meeting.getProperties().add(new Description(details))
         
         Some(meeting)
       }

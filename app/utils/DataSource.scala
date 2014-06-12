@@ -30,11 +30,18 @@ object DataSource {
     }
   }
   
+  implicit val speakerReads = (
+      (JsPath \ "fullname").read(cleanedStringReads) and 
+      (JsPath \ "company").readNullable(cleanedStringReads) and 
+      (JsPath \ "twitter").readNullable(cleanedStringReads)
+    )(Speaker.apply _)
+  
   implicit val sessionReads = (
       (JsPath \ "title").read(cleanedStringReads) and 
       (JsPath \ "time").read(timePeriodReads) and 
       (JsPath \ "room").readNullable[Int] and 
-      (JsPath \ "description").readNullable(cleanedStringReads)
+      (JsPath \ "description").readNullable(cleanedStringReads) and
+      (JsPath \ "speakers").readNullable[Seq[Speaker]]
     )(Session.apply _)
   
   val dayDateReads = __.read[String].map { v =>

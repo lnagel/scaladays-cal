@@ -4,7 +4,7 @@ import org.joda.time.DateTime
 
 object Session {
   def withCorrectedTimes(day: Day, session: Session) = {
-    Session(session.title, correctTimes(day, session), session.location, session.details)
+    Session(session.title, correctTimes(day, session), session.location, session.details, session.speakers)
   }
   
   def correctTimes(day: Day, session: Session) = {
@@ -24,4 +24,4 @@ object Session {
   }
 }
 
-case class Session(title: String, times: Option[Tuple2[DateTime,DateTime]], location: Option[Int], details: Option[String])
+case class Session(title: String, times: Option[Tuple2[DateTime,DateTime]], location: Option[Int], details: Option[String], speakers: Option[Seq[Speaker]])

@@ -21,7 +21,7 @@ object Application extends Controller {
       DataSource.sessionList map {
         sessions => Ok(CalendarBuilder.createCalendar(sessions).toString)
       } recover {
-        case _ => InternalServerError("No valid data received")
+        case error: RuntimeException => InternalServerError(error.getMessage())
       }
     }
   }
