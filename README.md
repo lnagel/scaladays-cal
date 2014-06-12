@@ -1,6 +1,7 @@
-scaladays-cal
+ScalaDays 2014 iCalendar
 =============
 
-ScalaDays 2014 iCalendar provider
+This is a simple Play Framework webapp that provides a calendar for ScalaDays 2014
+based on the live JSON data from the event website.
 
-http://scaladays-cal.herokuapp.com/sessions.ical
+The calendar is published at: http://scaladays-cal.herokuapp.com/sessions.ical
