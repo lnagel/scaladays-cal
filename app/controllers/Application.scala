@@ -16,10 +16,12 @@ object Application extends Controller {
     Ok("")
   }
   
-  def calendar = Cached((_ => "sessions.ical"): (RequestHeader => String), 120) {
+  def calendar = Cached((_ => "sessions.ical"): (RequestHeader => String), 600) {
     Action.async {
-      DataSource.sessionList map {
-        sessions => Ok(CalendarBuilder.createCalendar(sessions).toString)
+      DataSource.sessionList map { sessions =>
+        Ok(CalendarBuilder.createCalendar(sessions).toString)
+          .withHeaders(CONTENT_TYPE -> "text/calendar")
+          .withHeaders(CONTENT_DISPOSITION -> "attachment; filename=sessions.ical")
       } recover {
         case error: RuntimeException => InternalServerError(error.getMessage())
       }
