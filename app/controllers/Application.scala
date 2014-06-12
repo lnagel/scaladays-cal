@@ -18,7 +18,7 @@ object Application extends Controller {
   
   def calendar = Cached((_ => "sessions.ical"): (RequestHeader => String), 120) {
     Action.async {
-      DataSource.data map {
+      DataSource.sessionList map {
         sessions => Ok(CalendarBuilder.createCalendar(sessions).toString)
       } recover {
         case _ => InternalServerError("No valid data received")

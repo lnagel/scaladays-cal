@@ -15,10 +15,6 @@ object DataSource {
   
   implicit val context = play.api.libs.concurrent.Execution.Implicits.defaultContext
   
-  def makeRequest = {
-    WS.url("http://scaladays.org/data.json").get()
-  }
-  
   val cleanedStringReads = __.read[String].map { v =>
     val doc: Document = Jsoup.parseBodyFragment(v)
     doc.body.text
@@ -57,25 +53,27 @@ object DataSource {
       (JsPath \ "Day3").read[Day]
     ).apply((day1, day2, day3) => Data(Seq(day1, day2, day3)))
   
-  def requestData = {
-    makeRequest.map { response =>
+  def wsRequest: Future[WSResponse] = {
+    WS.url("http://scaladays.org/data.json").get()
+  }
+  
+  def jsonResponse: Future[JsResult[Data]] = {
+    wsRequest.map { response =>
       response.json.validate[Data]
     }
   }
   
-  def data: Future[Seq[Session]] = {
-    requestData.map { jsResult =>
-      jsResult match {
-        case s: JsSuccess[Data] => {
-          s.get.days.flatMap { d =>
-            d.sessions.map { s =>
-              Session.withCorrectedTimes(d, s)
-            }
+  def sessionList: Future[Seq[Session]] = {
+    jsonResponse.map {
+      case success: JsSuccess[Data] => {
+        success.get.days.flatMap { d =>
+          d.sessions.map { s =>
+            Session.withCorrectedTimes(d, s)
           }
         }
-        case e: JsError => {
-          throw new RuntimeException(e.toString)
-        }
+      }
+      case error: JsError => {
+        throw new RuntimeException(error.toString)
       }
     }
   }
