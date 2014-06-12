@@ -18,37 +18,10 @@ object Application extends Controller {
   implicit val context = play.api.libs.concurrent.Execution.Implicits.defaultContext
 
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok("")
   }
   
-  def dataJson = Action.async {
-    DataSource.makeRequest.map { response =>
-      Ok(response.body)
-    }
-  }
-  
-  def sessionsJson = Action.async {
-    DataSource.data.map { sessionsOption =>
-      sessionsOption match {
-        case Some(sessions) => {
-          val jsObjects = sessions.map { s =>
-            JsObject(
-                Seq(
-                    "start_time" -> JsString(s.time.map(_._1.toString()).getOrElse("")),
-                    "end_time" -> JsString(s.time.map(_._2.toString()).getOrElse("")),
-                    "title" -> JsString(s.title)
-                  )
-              )
-          }
-
-          Ok(Json.prettyPrint(JsArray(jsObjects)))
-        }
-        case None => Ok(Json.prettyPrint(JsObject(Seq("error" -> JsString("true")))))
-      }
-    }
-  }
-  
-  def sessionsIcal = Cached((_ => "sessions.ical"): (RequestHeader => String), 120) {
+  def calendar = Cached((_ => "sessions.ical"): (RequestHeader => String), 120) {
     Action.async {
       DataSource.data.map { sessionsOption =>
         sessionsOption match {

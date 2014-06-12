@@ -4,9 +4,4 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /data.json                  controllers.Application.dataJson
-GET     /sessions.json              controllers.Application.sessionsJson
-GET     /sessions.ical              controllers.Application.sessionsIcal
-
-# Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /sessions.ical              controllers.Application.calendar
