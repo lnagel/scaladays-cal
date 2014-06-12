@@ -20,12 +20,16 @@ object DataSource {
     doc.body.text
   }
   
-  val timePeriodReads = __.read[String].map { v =>
+  def parseTime(time: String) = {
     val tz = DateTimeZone.forID("Europe/Berlin")
-    val fmt = DateTimeFormat.forPattern("HH:mm").withZone(tz)
+    val fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(tz)
+    fmt.parseDateTime(s"2014-06-01 $time")
+  }
+  
+  val timePeriodReads = __.read[String].map { v =>
     v.split("-") match {
       case Array(start, end) => {
-        Some((fmt.parseDateTime(start), fmt.parseDateTime(end)))
+        Some((parseTime(start), parseTime(end)))
       }
       case _ => None
     }

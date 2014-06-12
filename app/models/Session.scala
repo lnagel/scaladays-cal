@@ -17,10 +17,14 @@ object Session {
   }
   
   def combine(date: DateTime, time: DateTime): DateTime = {
-    date
-      .withHourOfDay(time.getHourOfDay)
-      .withMinuteOfHour(time.getMinuteOfHour)
-      .withSecondOfMinute(time.getSecondOfMinute)
+    new DateTime(
+        date.getYear,
+        date.getMonthOfYear,
+        date.getDayOfMonth,
+        time.getHourOfDay,
+        time.getMinuteOfHour,
+        time.getSecondOfMinute,
+        time.getZone)
   }
 }
 
