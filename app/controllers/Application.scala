@@ -1,17 +1,12 @@
 package controllers
 
-import play.api._
-import play.api.mvc._
 import play.api.Play.current
-import play.api.libs.json._
-import play.api.libs.ws._
-import scala.concurrent.Future
-import utils.DataSource
-import models.Data
-import org.joda.time._
-import models.Session
+import play.api.cache.Cached
+import play.api.mvc.Action
+import play.api.mvc.Controller
+import play.api.mvc.RequestHeader
 import utils.CalendarBuilder
-import play.api.cache._
+import utils.DataSource
 
 object Application extends Controller {
   
@@ -23,16 +18,10 @@ object Application extends Controller {
   
   def calendar = Cached((_ => "sessions.ical"): (RequestHeader => String), 120) {
     Action.async {
-      DataSource.data.map { sessionsOption =>
-        sessionsOption match {
-          case Some(sessions) => {
-            val calendar = CalendarBuilder.createCalendar(sessions)
-            Ok(calendar.toString)
-          }
-          case None => {
-            InternalServerError("No valid data received")
-          }
-        }
+      DataSource.data map {
+        sessions => Ok(CalendarBuilder.createCalendar(sessions).toString)
+      } recover {
+        case _ => InternalServerError("No valid data received")
       }
     }
   }
