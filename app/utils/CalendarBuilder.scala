@@ -27,6 +27,7 @@ object CalendarBuilder {
     calendar.getProperties().add(CalScale.GREGORIAN)
     
     calendar.getProperties().add(new XProperty("X-WR-CALNAME", "Scala Days 2014"))
+    calendar.getProperties().add(new XProperty("X-WR-TIMEZONE", "Europe/Berlin"))
     
     calendar
   }
