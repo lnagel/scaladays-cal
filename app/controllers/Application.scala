@@ -13,7 +13,7 @@ object Application extends Controller {
   implicit val context = play.api.libs.concurrent.Execution.Implicits.defaultContext
 
   def index = Action {
-    Ok("")
+    Redirect("/sessions.ical", MOVED_PERMANENTLY)
   }
   
   def calendar = Cached((_ => "sessions.ical"): (RequestHeader => String), 600) {
